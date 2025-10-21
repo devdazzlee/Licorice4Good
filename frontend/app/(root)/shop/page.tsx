@@ -9,7 +9,6 @@ import { useUser } from "@/hooks/useUser";
 import { useCartStore } from "@/store/cartStore";
 
 const ORANGE = "#FF5D39";
-const YELLOW = "#F1A900";
 const BLACK = "#111111";
 
 // Product data structure matching the backend API

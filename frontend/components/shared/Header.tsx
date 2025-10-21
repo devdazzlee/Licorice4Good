@@ -3,7 +3,6 @@ import { navLinks } from "@/constant/index";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState, useRef, useEffect } from "react";
-import CustomButton from "@/components/custom/CustomButton";
 import { ShoppingCart, Menu, X, Heart } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/hooks/useUser";
@@ -33,20 +32,12 @@ const Header = () => {
   );
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const [logoutLoading, setLogoutLoading] = useState(false);
   const dropdownRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const router = useRouter();
 
-  const handleClick = () => {
-    if (user) {
-      handleLogout();
-    } else {
-      router.push("/auth/login");
-    }
-  };
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleLogout = async () => {
-    setLogoutLoading(true);
     try {
       await axios.post(`${API_URL}/auth/logout`, {}, { withCredentials: true });
       clearUser(); // Clear user state immediately
@@ -56,8 +47,6 @@ const Header = () => {
       // Even if logout fails, clear local state
       clearUser();
       window.location.reload();
-    } finally {
-      setLogoutLoading(false);
     }
   };
 

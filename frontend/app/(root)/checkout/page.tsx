@@ -9,6 +9,7 @@ import { Loader2, Package, Truck, CreditCard, MapPin } from "lucide-react";
 
 interface ShippingRate {
   id: string;
+  objectId: string;
   carrier: string;
   serviceName: string;
   amount: number;
@@ -28,11 +29,20 @@ interface ShippingAddress {
   country: string;
 }
 
+interface RateResponse {
+  objectId?: string;
+  id?: string;
+  carrier: string;
+  serviceName: string;
+  amount: number;
+  estimatedDays: number;
+  currency?: string;
+}
+
 export default function CheckoutPage() {
   const router = useRouter();
   const { items, getTotal } = useCartStore();
   
-  const [loading, setLoading] = useState(false);
   const [calculatingShipping, setCalculatingShipping] = useState(false);
   const [processingPayment, setProcessingPayment] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -115,9 +125,9 @@ export default function CheckoutPage() {
 
       if (response.data.rates && response.data.rates.length > 0) {
         // Map rates to the format expected by the component
-        const mappedRates = response.data.rates.map((rate: any) => ({
-          id: rate.objectId || rate.id,
-          objectId: rate.objectId || rate.id,
+        const mappedRates = response.data.rates.map((rate: RateResponse) => ({
+          id: rate.objectId || rate.id || '',
+          objectId: rate.objectId || rate.id || '',
           carrier: rate.carrier,
           serviceName: rate.serviceName,
           amount: rate.amount,
