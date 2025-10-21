@@ -1,0 +1,175 @@
+@import "tailwindcss";
+@import "react-toastify/dist/ReactToastify.css";
+
+@font-face {
+  font-family: "Archivo";
+  src: url("/assets/fonts/Archivo-VariableFont_wdth,wght.ttf");
+}
+
+@font-face {
+  font-family: "Inter";
+  src: url("/assets/fonts/Inter-VariableFont_opsz,wght.ttf");
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --primary: #FF5D39;
+  --secondary: #F1A900;
+  --white: #FFFFFF;
+  --black: #101010;
+  --muted: #64607D;
+  --accent: #00B2AA;
+  --font-inter: "Inter";
+  --font-archivo: "Archivo";
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-inter: var(--font-inter);
+  --font-archivo: var(--font-archivo);
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-white: var(--white);
+  --color-black: var(--black);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+}
+
+body {
+  font-family: var(--font-inter), var(--font-archivo), Arial, Helvetica, sans-serif;
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  background: var(--color-primary);
+  color: var(--color-white);
+}
+
+.layout {
+  @apply container m-auto px-3 ;
+}
+
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+/* styles/globals.css */
+.clip-curve {
+  clip-path: path("M 0 150 C 300 0, 700 300, 1000 150 L 1000 1000 L 0 1000 Z"
+    );
+}
+
+/* Custom Slider Styles */
+.slider::-webkit-slider-thumb {
+  appearance: none;
+  height: 45px;
+  width: 45px;
+  border-radius: 50%;
+  background: #f97316;
+  cursor: pointer;
+  border: 8px solid #f1a900;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.slider::-moz-range-thumb {
+  height: 45px;
+  width: 45px;
+  border-radius: 50%;
+  background: #f97316;
+  cursor: pointer;
+  border: 28px solid #f1a900;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.slider::-webkit-slider-track {
+  background: transparent;
+}
+
+.slider::-moz-range-track {
+  background: transparent;
+}
+
+/* Line clamp utility for text truncation */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Custom Scrollbar for Modal - Force Desktop Visibility */
+.custom-scrollbar {
+  
+  /* overflow-y: scroll !important;
+  scrollbar-width: thin !important;
+  scrollbar-color: #FF5D39 #f1f1f1 !important; */
+}
+
+/* Webkit browsers (Chrome, Safari, Edge) - Force visibility */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 12px !important;
+  height: 12px !important;
+  background: #f1f1f1 !important;
+  /* Override macOS scrollbar hiding */
+  -webkit-appearance: none !important;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f1f1f1 !important;
+  border-radius: 6px !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #FF5D39 !important;
+  border-radius: 6px !important;
+  border: 2px solid #f1f1f1 !important;
+  min-height: 40px !important;
+  /* Force thumb visibility */
+  -webkit-appearance: none !important;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #e54d29 !important;
+}
+
+.custom-scrollbar::-webkit-scrollbar-corner {
+  background: #f1f1f1 !important;
+}
+
+/* Override macOS scrollbar hiding behavior */
+@supports (-webkit-appearance: none) {
+  .custom-scrollbar::-webkit-scrollbar:vertical {
+    width: 12px !important;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar:horizontal {
+    height: 12px !important;
+  }
+}

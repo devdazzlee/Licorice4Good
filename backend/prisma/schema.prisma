@@ -1,0 +1,242 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                      String     @id @default(cuid())
+  name                    String?
+  email                   String?    @unique
+  password                String?
+  image                   String?
+  provider                String     @default("local")
+  providerId              String?    @unique
+  createdAt               DateTime   @default(now())
+  updatedAt               DateTime   @updatedAt
+  refreshToken            String?
+  resetToken              String?
+  resetTokenExpiry        DateTime?
+  role                    String     @default("user")
+  isVerified              Boolean    @default(false)
+  phone                   String?
+  verificationTokenExpiry DateTime?
+  verificationTokenHash   String?
+  CartItem                CartItem[]
+  cartLines               CartLine[]
+  orders                  Order[]
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Product {
+  id                  String          @id @default(cuid())
+  name                String
+  description         String?
+  price               Float
+  stock               Int             @default(0)
+  category            String
+  imageUrl            String?
+  cloudinaryPublicId  String?        // Cloudinary public ID for image deletion
+  isActive            Boolean         @default(true)
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  sku                 String?
+  CartItem            CartItem[]
+  orderItems          OrderItem[]
+  productFlavors      ProductFlavor[]
+
+  @@index([category])
+  @@index([isActive])
+  @@index([sku])
+}
+
+model ProductFlavor {
+  id        String  @id @default(cuid())
+  productId String
+  flavorId  String
+  quantity  Int
+  flavor    Flavor  @relation(fields: [flavorId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, flavorId])
+  @@index([productId])
+  @@index([flavorId])
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  userId          String?
+  guestId         String?
+  guestEmail      String?
+  status          String      @default("pending")
+  total           Float
+  shippingAddress Json?
+  paymentStatus   String      @default("pending")
+  orderNotes      String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  
+  // Shipping fields
+  shipmentId        String?
+  trackingNumber    String?
+  trackingUrl       String?
+  shippingLabelUrl  String?
+  shippingStatus    String?   @default("pending")
+  shippingCarrier   String?
+  shippingService   String?
+  shippingCost      Float?
+  shippingError     String?
+  
+  user            User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orderItems      OrderItem[]
+
+  @@index([userId])
+  @@index([guestId])
+  @@index([guestEmail])
+  @@index([status])
+  @@index([paymentStatus])
+  @@index([trackingNumber])
+  @@index([shippingStatus])
+}
+
+model OrderItem {
+  id        String   @id @default(cuid())
+  orderId   String
+  productId String?  // Made optional for custom packs
+  quantity  Int
+  price     Float
+  total     Float
+  createdAt DateTime @default(now())
+
+  // Custom pack fields
+  flavorIds      String[] // For custom packs
+  customPackName String? // For custom packs
+
+  // Relations
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product? @relation(fields: [productId], references: [id])
+
+  @@index([orderId])
+  @@index([productId])
+  @@index([flavorIds])
+}
+
+model Flavor {
+  id                  String           @id @default(cuid())
+  name                String           @unique
+  aliases             String[] // for search & import cleaning
+  imageUrl            String? // Flavor image URL
+  cloudinaryPublicId  String? // Cloudinary public ID for image deletion
+  active              Boolean          @default(true)
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+  inventory           FlavorInventory?
+  packRecipeItems     PackRecipeItem[]
+  productFlavors      ProductFlavor[]
+
+  @@index([active])
+}
+
+model PackRecipe {
+  id        String           @id @default(cuid())
+  title     String
+  kind      String
+  active    Boolean          @default(true)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  cartLines CartLine[]
+  items     PackRecipeItem[]
+
+  @@index([kind])
+  @@index([active])
+}
+
+model PackRecipeItem {
+  id           String     @id @default(cuid())
+  packRecipeId String
+  flavorId     String
+  quantity     Int
+  flavor       Flavor     @relation(fields: [flavorId], references: [id])
+  packRecipe   PackRecipe @relation(fields: [packRecipeId], references: [id], onDelete: Cascade)
+
+  @@unique([packRecipeId, flavorId])
+  @@index([packRecipeId])
+  @@index([flavorId])
+}
+
+model FlavorInventory {
+  id          String   @id @default(cuid())
+  flavorId    String   @unique
+  onHand      Int      @default(0)
+  reserved    Int      @default(0)
+  safetyStock Int      @default(5)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  flavor      Flavor   @relation(fields: [flavorId], references: [id])
+
+  @@index([flavorId])
+}
+
+model CartLine {
+  id         String      @id @default(cuid())
+  userId     String?
+  guestId    String?
+  productId  String
+  recipeId   String?
+  quantity   Int
+  unitPrice  Float
+  sku        String
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  flavorIds  String[]
+  packRecipe PackRecipe? @relation(fields: [recipeId], references: [id], onDelete: Restrict)
+  user       User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([guestId])
+  @@index([productId])
+  @@index([recipeId])
+  @@index([flavorIds])
+}
+
+model CartItem {
+  id              String   @id
+  userId          String
+  title           String
+  imageUrl        String?
+  stikersImgeUrl  String[]
+  stikersName     String[]
+  size            String?
+  sizeAndQuantity Json?
+  colorsName      String?
+  colorsCode      String?
+  options         Json
+  quantity        Int
+  total           Float
+  orderNotes      String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime
+  productId       String?
+  recipeId        String?
+  sku             String
+  unitPrice       Float
+  flavorIds       String[]
+  Product         Product? @relation(fields: [productId], references: [id])
+  User            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([flavorIds])
+  @@index([productId])
+  @@index([recipeId])
+  @@index([userId])
+}

@@ -1,0 +1,133 @@
+# Nginx Configuration for Large File Uploads
+# 
+# This file contains the necessary nginx configuration to allow large file uploads (up to 500MB).
+# The 413 "Request Entity Too Large" error is caused by nginx's default limit of 1MB.
+#
+# INSTALLATION INSTRUCTIONS:
+# 
+# 1. Find your nginx configuration file (usually at /etc/nginx/nginx.conf or /etc/nginx/sites-available/default)
+# 2. Add the following lines to your nginx configuration
+# 3. Restart nginx: sudo systemctl restart nginx  OR  sudo service nginx restart
+
+# ==============================================================================
+# OPTION 1: Add to the main nginx.conf file (applies to all sites)
+# ==============================================================================
+# Add this inside the 'http' block in /etc/nginx/nginx.conf:
+
+http {
+    # ... other configurations ...
+    
+    # Allow large file uploads (500MB)
+    client_max_body_size 500M;
+    
+    # Increase buffer sizes for large uploads
+    client_body_buffer_size 10M;
+    
+    # Increase timeouts for large file uploads
+    client_body_timeout 300s;
+    send_timeout 300s;
+    proxy_read_timeout 300s;
+    proxy_connect_timeout 300s;
+    proxy_send_timeout 300s;
+    
+    # ... other configurations ...
+}
+
+# ==============================================================================
+# OPTION 2: Add to your specific site configuration (recommended)
+# ==============================================================================
+# Add this inside your 'server' block in /etc/nginx/sites-available/your-site
+# or /etc/nginx/conf.d/your-site.conf:
+
+server {
+    listen 80;
+    server_name api.licorice4good.com;
+    
+    # Allow large file uploads (500MB)
+    client_max_body_size 500M;
+    
+    # Increase buffer sizes for large uploads
+    client_body_buffer_size 10M;
+    
+    # Increase timeouts for large file uploads
+    client_body_timeout 300s;
+    send_timeout 300s;
+    
+    location / {
+        proxy_pass http://localhost:4000;  # Your backend port
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+        
+        # Proxy timeouts for large uploads
+        proxy_read_timeout 300s;
+        proxy_connect_timeout 300s;
+        proxy_send_timeout 300s;
+        
+        # Additional headers
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+
+# ==============================================================================
+# OPTION 3: For specific endpoints only (most restrictive - safest)
+# ==============================================================================
+# Add this inside your 'server' block to allow large uploads only for admin routes:
+
+server {
+    listen 80;
+    server_name api.licorice4good.com;
+    
+    # Default limit for most routes (10MB)
+    client_max_body_size 10M;
+    
+    # Allow large uploads only for admin routes
+    location ~ ^/admin/(products|flavors) {
+        client_max_body_size 500M;
+        client_body_buffer_size 10M;
+        client_body_timeout 300s;
+        
+        proxy_pass http://localhost:4000;
+        proxy_read_timeout 300s;
+        proxy_connect_timeout 300s;
+        proxy_send_timeout 300s;
+        
+        # ... other proxy settings ...
+    }
+    
+    # Other routes with default 10MB limit
+    location / {
+        proxy_pass http://localhost:4000;
+        # ... other proxy settings ...
+    }
+}
+
+# ==============================================================================
+# VERIFICATION
+# ==============================================================================
+# After making changes:
+# 1. Test nginx configuration: sudo nginx -t
+# 2. If test passes, reload nginx: sudo systemctl reload nginx
+# 3. Check nginx error logs if issues persist: sudo tail -f /var/log/nginx/error.log
+
+# ==============================================================================
+# CLOUDFLARE USERS
+# ==============================================================================
+# If you're using Cloudflare as a proxy, note that Cloudflare Free plan has a 100MB limit.
+# You'll need to either:
+# - Upgrade to a paid Cloudflare plan (Pro allows 100MB, Business allows 200MB, Enterprise allows 500MB+)
+# - Bypass Cloudflare for upload endpoints (not recommended for security)
+# - Use Cloudflare's "Stream" or "Images" product for direct uploads
+
+# ==============================================================================
+# ALTERNATIVE: PM2 ECOSYSTEM FILE
+# ==============================================================================
+# If you're using PM2 directly without nginx, the Express server limits should be sufficient.
+# Just make sure your Express app is configured correctly (already done in server.ts).
+
+
+
