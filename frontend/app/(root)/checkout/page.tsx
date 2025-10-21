@@ -96,7 +96,9 @@ export default function CheckoutPage() {
         {
           shippingAddress: {
             name: address.name,
-            street: address.street1,
+            email: address.email,
+            phone: address.phone,
+            street1: address.street1,
             city: address.city,
             state: address.state,
             zip: address.zipCode,
@@ -112,10 +114,21 @@ export default function CheckoutPage() {
       );
 
       if (response.data.rates && response.data.rates.length > 0) {
-        setShippingRates(response.data.rates);
+        // Map rates to the format expected by the component
+        const mappedRates = response.data.rates.map((rate: any) => ({
+          id: rate.objectId || rate.id,
+          objectId: rate.objectId || rate.id,
+          carrier: rate.carrier,
+          serviceName: rate.serviceName,
+          amount: rate.amount,
+          estimatedDays: rate.estimatedDays,
+          currency: rate.currency || 'USD',
+        }));
+        
+        setShippingRates(mappedRates);
         setShowShippingOptions(true);
         // Auto-select the cheapest rate
-        const cheapestRate = response.data.rates.reduce((prev: ShippingRate, curr: ShippingRate) =>
+        const cheapestRate = mappedRates.reduce((prev: ShippingRate, curr: ShippingRate) =>
           curr.amount < prev.amount ? curr : prev
         );
         setSelectedRate(cheapestRate);
@@ -167,7 +180,7 @@ export default function CheckoutPage() {
           country: address.country,
         },
         selectedShippingRate: {
-          id: selectedRate.id,
+          objectId: selectedRate.objectId || selectedRate.id,
           carrier: selectedRate.carrier,
           serviceName: selectedRate.serviceName,
           amount: selectedRate.amount,
@@ -212,7 +225,9 @@ export default function CheckoutPage() {
 
       const data = await resp.json();
 
-      if (data.sessionUrl) {
+      if (data.url) {
+        window.location.href = data.url;
+      } else if (data.sessionUrl) {
         window.location.href = data.sessionUrl;
       } else {
         throw new Error("No session URL returned");
@@ -422,44 +437,47 @@ export default function CheckoutPage() {
                 </div>
 
                 <div className="space-y-3">
-                  {shippingRates.map((rate) => (
-                    <div
-                      key={rate.id}
-                      onClick={() => setSelectedRate(rate)}
-                      className={`p-4 border-2 rounded-xl cursor-pointer transition-all ${
-                        selectedRate?.id === rate.id
-                          ? "border-[#FF5D39] bg-[#FF5D39]/5"
-                          : "border-gray-200 hover:border-gray-300"
-                      }`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <div
-                            className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                              selectedRate?.id === rate.id
-                                ? "border-[#FF5D39] bg-[#FF5D39]"
-                                : "border-gray-300"
-                            }`}
-                          >
-                            {selectedRate?.id === rate.id && (
-                              <div className="w-2 h-2 bg-white rounded-full" />
-                            )}
+                  {shippingRates.map((rate) => {
+                    const isSelected = selectedRate?.id === rate.id;
+                    return (
+                      <div
+                        key={rate.id}
+                        onClick={() => setSelectedRate(rate)}
+                        className={`p-4 border-2 rounded-xl cursor-pointer transition-all ${
+                          isSelected
+                            ? "border-[#FF5D39] bg-[#FF5D39]/5"
+                            : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div
+                              className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${
+                                isSelected
+                                  ? "border-[#FF5D39] bg-[#FF5D39]"
+                                  : "border-gray-300 bg-white"
+                              }`}
+                            >
+                              {isSelected && (
+                                <div className="w-2 h-2 bg-white rounded-full" />
+                              )}
+                            </div>
+                            <div>
+                              <p className={`font-semibold ${isSelected ? "text-[#FF5D39]" : "text-gray-900"}`}>
+                                {rate.carrier} - {rate.serviceName}
+                              </p>
+                              <p className="text-sm text-gray-500">
+                                Estimated delivery: {rate.estimatedDays} days
+                              </p>
+                            </div>
                           </div>
-                          <div>
-                            <p className="font-semibold text-gray-900">
-                              {rate.carrier} - {rate.serviceName}
-                            </p>
-                            <p className="text-sm text-gray-500">
-                              Estimated delivery: {rate.estimatedDays} days
-                            </p>
-                          </div>
+                          <p className={`text-lg font-bold ${isSelected ? "text-[#FF5D39]" : "text-gray-900"}`}>
+                            ${rate.amount.toFixed(2)}
+                          </p>
                         </div>
-                        <p className="text-lg font-bold text-gray-900">
-                          ${rate.amount.toFixed(2)}
-                        </p>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
 
                 <button
