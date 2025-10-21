@@ -1,10 +1,69 @@
 {
   "version": 2,
-  "name": "licorice-backend",
-  "rewrites": [
+  "builds": [
     {
-      "source": "/(.*)",
-      "destination": "/api"
+      "src": "src/server.ts",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/payments/webhook",
+      "dest": "src/server.ts",
+      "methods": ["POST"]
+    },
+    {
+      "src": "/shippo/webhook",
+      "dest": "src/server.ts",
+      "methods": ["POST"]
+    },
+    {
+      "src": "/uploads/(.*)",
+      "dest": "src/server.ts"
+    },
+    {
+      "src": "/auth/(.*)",
+      "dest": "src/server.ts"
+    },
+    {
+      "src": "/products/(.*)",
+      "dest": "src/server.ts"
+    },
+    {
+      "src": "/orders/(.*)",
+      "dest": "src/server.ts"
+    },
+    {
+      "src": "/3pack/(.*)",
+      "dest": "src/server.ts"
+    },
+    {
+      "src": "/inventory/(.*)",
+      "dest": "src/server.ts"
+    },
+    {
+      "src": "/payments/(.*)",
+      "dest": "src/server.ts"
+    },
+    {
+      "src": "/analytics/(.*)",
+      "dest": "src/server.ts"
+    },
+    {
+      "src": "/admin/(.*)",
+      "dest": "src/server.ts"
+    },
+    {
+      "src": "/shippo/(.*)",
+      "dest": "src/server.ts"
+    },
+    {
+      "src": "/health",
+      "dest": "src/server.ts"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "src/server.ts"
     }
   ],
   "env": {
