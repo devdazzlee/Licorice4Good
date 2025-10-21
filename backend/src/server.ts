@@ -185,42 +185,48 @@ app.use(notFound);
 // Error handling middleware (must be last)
 app.use(errorHandler);
 
-const PORT = process.env.PORT || 3000;
+// Export the app for serverless (Vercel)
+export default app;
 
-const server = app.listen(PORT, () => {
-  logger.info(
-    `Server is running on port ${PORT} in ${process.env.NODE_ENV} mode`
-  );
-});
+// Only start server if not in serverless environment
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+  const PORT = process.env.PORT || 3000;
 
-// Test database connection
-prisma
-  .$connect()
-  .then(() => {
-    logger.info("Database connected successfully");
-  })
-  .catch((err) => {
-    logger.error("Database connection failed:", err);
+  const server = app.listen(PORT, () => {
+    logger.info(
+      `Server is running on port ${PORT} in ${process.env.NODE_ENV} mode`
+    );
   });
 
-server.on("error", (err) => {
-  logger.error(`Server error: ${err.message}`);
-  process.exit(1);
-});
+  // Test database connection
+  prisma
+    .$connect()
+    .then(() => {
+      logger.info("Database connected successfully");
+    })
+    .catch((err) => {
+      logger.error("Database connection failed:", err);
+    });
 
-// Graceful shutdown
-process.on("SIGTERM", () => {
-  logger.info("SIGTERM received, shutting down gracefully");
-  server.close(() => {
-    logger.info("Process terminated");
-    process.exit(0);
+  server.on("error", (err) => {
+    logger.error(`Server error: ${err.message}`);
+    process.exit(1);
   });
-});
 
-process.on("SIGINT", () => {
-  logger.info("SIGINT received, shutting down gracefully");
-  server.close(() => {
-    logger.info("Process terminated");
-    process.exit(0);
+  // Graceful shutdown
+  process.on("SIGTERM", () => {
+    logger.info("SIGTERM received, shutting down gracefully");
+    server.close(() => {
+      logger.info("Process terminated");
+      process.exit(0);
+    });
   });
-});
+
+  process.on("SIGINT", () => {
+    logger.info("SIGINT received, shutting down gracefully");
+    server.close(() => {
+      logger.info("Process terminated");
+      process.exit(0);
+    });
+  });
+}
