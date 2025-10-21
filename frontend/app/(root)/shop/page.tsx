@@ -306,103 +306,123 @@ const ShopPage = () => {
             threePackVariants.map((variant) => (
               <div
                 key={variant.id}
-                className="group rounded-2xl overflow-hidden bg-white border border-[#FF5D39]/20 hover:border-[#FF5D39] shadow-md hover:shadow-2xl transition-all duration-300 transform-gpu hover:-translate-y-1 h-full flex flex-col"
+                className="group rounded-2xl overflow-hidden bg-white border-2 border-gray-100 hover:border-[#FF5D39] shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 h-full flex flex-col"
               >
-                <div className="relative">
-                  <div className="block">
+                {/* Product Image Section */}
+                <div className="relative bg-gradient-to-br from-purple-50 to-pink-50 overflow-hidden">
+                  <div className="block p-4">
                     <Image
                       src="/assets/images/slider.png"
                       alt={variant.title}
                       width={640}
                       height={480}
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      className="w-full aspect-[4/3] object-cover transition-transform duration-300 group-hover:scale-105 rounded-t-2xl"
+                      className="w-full aspect-square object-contain transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3"
                     />
                   </div>
+                  
+                  {/* Category Badge */}
                   <span
-                    className="absolute top-3 sm:top-4 left-3 sm:left-4 text-xs sm:text-sm font-bold px-2.5 sm:px-3 py-1 rounded-full shadow"
+                    className="absolute top-3 left-3 text-xs font-bold px-2.5 py-1 rounded-full shadow-md backdrop-blur-sm"
                     style={{
                       background:
                         variant.kind === "Traditional"
-                          ? "#8B4513"
+                          ? "linear-gradient(135deg, #8B4513 0%, #A0522D 100%)"
                           : variant.kind === "Sour"
-                          ? "#FF6B35"
-                          : "#FF69B4",
+                          ? "linear-gradient(135deg, #FF6B35 0%, #FF8C5A 100%)"
+                          : "linear-gradient(135deg, #FF69B4 0%, #FF89C9 100%)",
                       color: "white",
-                      boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
                     }}
                   >
                     {variant.kind}
                   </span>
+                  
+                  {/* Price Badge */}
                   <span
-                    className="absolute top-3 sm:top-4 right-3 sm:right-4 text-sm sm:text-lg font-bold px-2.5 sm:px-3 py-1 rounded-full shadow"
+                    className="absolute top-3 right-3 text-base font-extrabold px-3 py-1 rounded-full shadow-lg backdrop-blur-sm"
                     style={{
-                      background: ORANGE,
+                      background: "linear-gradient(135deg, #FF5D39 0%, #FF8F6B 100%)",
                       color: "white",
-                      boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
                     }}
                   >
                     $27.00
                   </span>
                 </div>
-                <div className="p-4 sm:p-6 flex flex-col flex-1 gap-3 sm:gap-4">
-                  <div>
-                    <h3
-                      className="font-extrabold text-lg sm:text-xl mb-2"
-                      style={{ color: BLACK }}
-                    >
+
+                {/* Product Details Section */}
+                <div className="p-4 flex flex-col flex-1">
+                  {/* Title & Description */}
+                  <div className="mb-3">
+                    <div className="flex items-center gap-1 mb-1">
+                      <span className="text-xs font-bold text-purple-600">⭐ 3-PACK</span>
+                    </div>
+                    <h3 className="font-bold text-lg mb-1.5 text-gray-900 line-clamp-1">
                       {variant.title}
                     </h3>
-                    <p className="text-gray-600 text-sm leading-relaxed mb-3 line-clamp-3">
+                    <p className="text-gray-600 text-xs leading-relaxed line-clamp-2">
                       Pre-made 3-pack with {variant.kind.toLowerCase()} flavors
                     </p>
-
-                    {/* Flavors with Checkboxes */}
-                    {Array.isArray(variant.items) &&
-                      variant.items.length > 0 && (
-                        <div className="space-y-1">
-                          <h4 className="font-semibold text-xs text-gray-700">
-                            Contains:
-                          </h4>
-                          <div className="space-y-1">
-                            {variant.items.slice(0, 3).map(
-                              (
-                                item: {
-                                  flavor_id: string;
-                                  flavor_name: string;
-                                  qty: number;
-                                },
-                                index: number
-                              ) => (
-                                <label
-                                  key={index}
-                                  className="text-xs text-gray-600 bg-gray-50 px-2 py-1 rounded flex items-center gap-2 cursor-pointer hover:bg-gray-100 transition-colors"
-                                >
-                                  <input
-                                    type="checkbox"
-                                    defaultChecked
-                                    className="w-3 h-3 text-orange-600 bg-white border-gray-300 rounded focus:ring-orange-500 focus:ring-2"
-                                  />
-                                  {item.flavor_name}{" "}
-                                  {item.qty > 1 && `×${item.qty}`}
-                                </label>
-                              )
-                            )}
-                          </div>
-                        </div>
-                      )}
                   </div>
-                  <div className="pt-2 sm:pt-4 mt-auto space-y-2">
-                    <CustomButton
-                      title="Buy Now"
-                      className="w-full !bg-gradient-to-r !from-green-500 !to-green-600 !text-white font-bold py-2.5 sm:py-3 rounded-lg shadow-lg transition-all hover:opacity-90"
-                      onClick={() => addPreDefinedPackToCart(variant.id)}
-                    />
-                    <CustomButton
-                      title="Add to Cart"
-                      className="w-full !bg-shop-gradient !text-white font-bold py-2.5 sm:py-3 rounded-lg shadow-lg transition-all hover:opacity-90"
-                      onClick={() => addPreDefinedPackToCart(variant.id)}
-                    />
+
+                  {/* Flavors with Checkboxes - Compact */}
+                  {Array.isArray(variant.items) &&
+                    variant.items.length > 0 && (
+                      <div className="mb-3">
+                        <h4 className="font-semibold text-xs text-gray-700 mb-1.5">
+                          Contains:
+                        </h4>
+                        <div className="space-y-1">
+                          {variant.items.slice(0, 3).map(
+                            (
+                              item: {
+                                flavor_id: string;
+                                flavor_name: string;
+                                qty: number;
+                              },
+                              index: number
+                            ) => (
+                              <label
+                                key={index}
+                                className="flex items-center gap-1.5 text-xs text-gray-700 bg-gray-50 px-2 py-1.5 rounded cursor-pointer hover:bg-orange-50 transition-colors"
+                              >
+                                <input
+                                  type="checkbox"
+                                  defaultChecked
+                                  className="w-3.5 h-3.5 text-orange-600 bg-white border-gray-300 rounded focus:ring-1 focus:ring-orange-500 cursor-pointer"
+                                />
+                                <span className="flex-1">{item.flavor_name}</span>
+                                {item.qty > 1 && (
+                                  <span className="text-xs font-bold text-orange-600">
+                                    ×{item.qty}
+                                  </span>
+                                )}
+                              </label>
+                            )
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                  {/* Buttons - Compact */}
+                  <div className="mt-auto space-y-1.5 pt-3 border-t border-gray-100">
+                    <button
+                      onClick={() => addPreDefinedPackToCart(variant.id, true)}
+                      className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-2.5 px-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5 flex items-center justify-center gap-1.5 text-sm"
+                    >
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                      </svg>
+                      Buy Now
+                    </button>
+                    <button
+                      onClick={() => addPreDefinedPackToCart(variant.id, false)}
+                      className="w-full bg-gradient-to-r from-[#FF5D39] to-[#F1A900] hover:from-[#FF6B35] hover:to-[#FFB800] text-white font-bold py-2.5 px-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5 flex items-center justify-center gap-1.5 text-sm"
+                    >
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                      </svg>
+                      Add to Cart
+                    </button>
                   </div>
                 </div>
               </div>
@@ -413,126 +433,138 @@ const ShopPage = () => {
             packages.map((pkg) => (
               <div
                 key={pkg.id}
-                className="group rounded-2xl overflow-hidden bg-white border border-[#FF5D39]/20 hover:border-[#FF5D39] shadow-md hover:shadow-2xl transition-all duration-300 transform-gpu hover:-translate-y-1 h-full flex flex-col"
+                className="group rounded-2xl overflow-hidden bg-white border-2 border-gray-100 hover:border-[#FF5D39] shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 h-full flex flex-col"
               >
-                <div className="relative bg-gradient-to-br from-gray-50 to-gray-100">
+                {/* Product Image Section */}
+                <div className="relative bg-gradient-to-br from-orange-50 to-red-50 overflow-hidden">
                   <Link href={`/products/${pkg.id}`} className="block p-4">
-                    {
-                      <Image
-                        src={normalizeImageSrc(pkg.imageUrl, pkg.updatedAt)}
-                        alt={pkg.name}
-                        width={640}
-                        height={480}
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                        className="w-full aspect-[4/3] object-contain transition-transform duration-300 group-hover:scale-105"
-                      />
-                    }
+                    <Image
+                      src={normalizeImageSrc(pkg.imageUrl, pkg.updatedAt)}
+                      alt={pkg.name}
+                      width={640}
+                      height={480}
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      className="w-full aspect-square object-contain transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3"
+                    />
                   </Link>
+                  
+                  {/* Category Badge */}
                   <span
-                    className="absolute top-3 sm:top-4 left-3 sm:left-4 text-xs sm:text-sm font-bold px-2.5 sm:px-3 py-1 rounded-full shadow"
+                    className="absolute top-3 left-3 text-xs font-bold px-2.5 py-1 rounded-full shadow-md backdrop-blur-sm"
                     style={{
                       background:
                         pkg.category === "Traditional"
-                          ? "#8B4513"
+                          ? "linear-gradient(135deg, #8B4513 0%, #A0522D 100%)"
                           : pkg.category === "Sour"
-                          ? "#FF6B35"
+                          ? "linear-gradient(135deg, #FF6B35 0%, #FF8C5A 100%)"
                           : pkg.category === "Sweet"
-                          ? "#FF69B4"
-                          : YELLOW,
+                          ? "linear-gradient(135deg, #FF69B4 0%, #FF89C9 100%)"
+                          : "linear-gradient(135deg, #F1A900 0%, #FFB800 100%)",
                       color: "white",
-                      boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
                     }}
                   >
                     {pkg.category}
                   </span>
+                  
+                  {/* Price Badge */}
                   <span
-                    className="absolute top-3 sm:top-4 right-3 sm:right-4 text-sm sm:text-lg font-bold px-2.5 sm:px-3 py-1 rounded-full shadow"
+                    className="absolute top-3 right-3 text-base font-extrabold px-3 py-1 rounded-full shadow-lg backdrop-blur-sm"
                     style={{
-                      background: ORANGE,
+                      background: "linear-gradient(135deg, #FF5D39 0%, #FF8F6B 100%)",
                       color: "white",
-                      boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
                     }}
                   >
                     ${pkg.price.toFixed(2)}
                   </span>
                 </div>
-                {/* Make the content area grow to push the button to the bottom */}
-                <div className="p-4 sm:p-6 flex flex-col flex-1 gap-3 sm:gap-4">
-                  <div>
-                    <h3
-                      className="font-extrabold text-lg sm:text-xl mb-2"
-                      style={{ color: BLACK }}
-                    >
+
+                {/* Product Details Section */}
+                <div className="p-4 flex flex-col flex-1">
+                  {/* Title & Description */}
+                  <div className="mb-3">
+                    <h3 className="font-bold text-lg mb-1.5 text-gray-900 line-clamp-1">
                       {pkg.name}
                     </h3>
-                    <p className="text-gray-600 text-sm leading-relaxed mb-3 line-clamp-3">
+                    <p className="text-gray-600 text-xs leading-relaxed line-clamp-2 mb-2">
                       {pkg.description}
                     </p>
 
                     {/* Stock Status */}
                     {pkg.stock !== undefined && (
-                      <div className="mb-3">
-                        <span
-                          className={`text-xs font-semibold px-2 py-1 rounded-full ${
-                            pkg.stock > 20
-                              ? "bg-green-100 text-green-700"
-                              : pkg.stock > 10
-                              ? "bg-yellow-100 text-yellow-700"
-                              : "bg-red-100 text-red-700"
-                          }`}
-                        >
-                          {pkg.stock > 20
-                            ? "In Stock"
+                      <span
+                        className={`inline-flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-full ${
+                          pkg.stock > 20
+                            ? "bg-green-100 text-green-700"
                             : pkg.stock > 10
-                            ? "Low Stock"
-                            : "Limited Stock"}{" "}
-                          ({pkg.stock})
-                        </span>
-                      </div>
-                    )}
-
-                    {/* Flavors with Checkboxes */}
-                    {Array.isArray(pkg.flavors) && pkg.flavors.length > 0 && (
-                      <div className="space-y-1">
-                        <h4 className="font-semibold text-xs text-gray-700">
-                          Contains:
-                        </h4>
-                        <div className="space-y-1">
-                          {pkg.flavors.slice(0, 3).map((flavor, index) => (
-                            <label
-                              key={index}
-                              className="text-xs text-gray-600 bg-gray-50 px-2 py-1 rounded flex items-center gap-2 cursor-pointer hover:bg-gray-100 transition-colors"
-                            >
-                              <input
-                                type="checkbox"
-                                defaultChecked
-                                className="w-3 h-3 text-orange-600 bg-white border-gray-300 rounded focus:ring-orange-500 focus:ring-2"
-                              />
-                              {flavor.name}{" "}
-                              {flavor.quantity > 1 && `×${flavor.quantity}`}
-                            </label>
-                          ))}
-                          {pkg.flavors.length > 3 && (
-                            <div className="text-xs text-gray-500 italic">
-                              +{pkg.flavors.length - 3} more flavors
-                            </div>
-                          )}
-                        </div>
-                      </div>
+                            ? "bg-yellow-100 text-yellow-700"
+                            : "bg-red-100 text-red-700"
+                        }`}
+                      >
+                        {pkg.stock > 20
+                          ? "In Stock"
+                          : pkg.stock > 10
+                          ? "Low Stock"
+                          : "Limited"}{" "}
+                        ({pkg.stock})
+                      </span>
                     )}
                   </div>
-                  {/* Buttons at the bottom */}
-                  <div className="pt-2 sm:pt-4 mt-auto space-y-2">
-                    <CustomButton
-                      title="Buy Now"
-                      className="w-full !bg-gradient-to-r !from-green-500 !to-green-600 !text-white font-bold py-2.5 sm:py-3 rounded-lg shadow-lg transition-all hover:opacity-90"
+
+                  {/* Flavors with Checkboxes - Compact */}
+                  {Array.isArray(pkg.flavors) && pkg.flavors.length > 0 && (
+                    <div className="mb-3">
+                      <h4 className="font-semibold text-xs text-gray-700 mb-1.5">
+                        Contains:
+                      </h4>
+                      <div className="space-y-1">
+                        {pkg.flavors.slice(0, 3).map((flavor, index) => (
+                          <label
+                            key={index}
+                            className="flex items-center gap-1.5 text-xs text-gray-700 bg-gray-50 px-2 py-1.5 rounded cursor-pointer hover:bg-orange-50 transition-colors"
+                          >
+                            <input
+                              type="checkbox"
+                              defaultChecked
+                              className="w-3.5 h-3.5 text-orange-600 bg-white border-gray-300 rounded focus:ring-1 focus:ring-orange-500 cursor-pointer"
+                            />
+                            <span className="flex-1">{flavor.name}</span>
+                            {flavor.quantity > 1 && (
+                              <span className="text-xs font-bold text-orange-600">
+                                ×{flavor.quantity}
+                              </span>
+                            )}
+                          </label>
+                        ))}
+                        {pkg.flavors.length > 3 && (
+                          <div className="text-xs text-gray-500 italic pl-2">
+                            +{pkg.flavors.length - 3} more
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Buttons - Compact */}
+                  <div className="mt-auto space-y-1.5 pt-3 border-t border-gray-100">
+                    <button
                       onClick={() => buyNow(pkg.id, pkg.name, pkg.price, normalizeImageSrc(pkg.imageUrl, pkg.updatedAt), pkg.sku)}
-                    />
-                    <CustomButton
-                      title="View Details"
-                      className="w-full !bg-shop-gradient !text-white font-bold py-2.5 sm:py-3 rounded-lg shadow-lg transition-all hover:opacity-90"
+                      className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-2.5 px-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5 flex items-center justify-center gap-1.5 text-sm"
+                    >
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                      </svg>
+                      Buy Now
+                    </button>
+                    <button
                       onClick={() => viewPackage(pkg.id)}
-                    />
+                      className="w-full bg-gradient-to-r from-[#FF5D39] to-[#F1A900] hover:from-[#FF6B35] hover:to-[#FFB800] text-white font-bold py-2.5 px-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5 flex items-center justify-center gap-1.5 text-sm"
+                    >
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                      </svg>
+                      View Details
+                    </button>
                   </div>
                 </div>
               </div>
